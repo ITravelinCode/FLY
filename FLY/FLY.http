@@ -1,0 +1,6 @@
+@FLY_HostAddress = http://localhost:5001
+
+GET {{FLY_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
