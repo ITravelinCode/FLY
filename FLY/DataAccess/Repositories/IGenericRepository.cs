@@ -20,5 +20,6 @@ namespace FLY.DataAccess.Repositories
         Task DeleteAsync(TEntity entityToDelete);
 
         Task UpdateAsync(TEntity entityToUpdate);
+        Task DeleteRangeAsync(IEnumerable<TEntity> entities);
     }
 }
