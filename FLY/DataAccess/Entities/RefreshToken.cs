@@ -1,21 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace FLY.DataAccess.Entities;
 
 public partial class RefreshToken
 {
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int RefreshTokenId { get; set; }
 
+    [Required]
     public int AccountId { get; set; }
 
-    public string Token { get; set; } = null!;
+    [Required]
+    public string Token { get; set; }
 
-    public string DeviceName { get; set; } = null!;
+    [Required]
+    [MaxLength(150)]
+    public string DeviceName { get; set; }
 
+    [Required]
     public DateTime ExpiredDate { get; set; }
 
+    [Required]
     public int Status { get; set; }
 
-    public virtual Account Account { get; set; } = null!;
+    [ForeignKey("AccountId")]
+    public Account Account { get; set; }
 }

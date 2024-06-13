@@ -1,31 +1,44 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace FLY.DataAccess.Entities;
 
 public partial class Shop
 {
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int ShopId { get; set; }
 
+    [Required]
     public int AccountId { get; set; }
 
-    public string ShopName { get; set; } = null!;
+    [Required]
+    [MaxLength(50)]
+    public string ShopName { get; set; }
 
-    public string ShopDetail { get; set; } = null!;
+    [Required]
+    [MaxLength(250)]
+    public string ShopDetail { get; set; }
 
-    public string ShopAddress { get; set; } = null!;
+    [Required]
+    [MaxLength(250)]
+    public string ShopAddress { get; set; }
 
+    [Required]
     public DateTime ShopStartTime { get; set; }
 
+    [Required]
     public DateTime ShopEndTime { get; set; }
 
+    [Required]
     public int Status { get; set; }
 
-    public virtual Account Account { get; set; } = null!;
+    [ForeignKey("AccountId")]
+    public Account Account { get; set; }
 
-    public virtual ICollection<Feedback> Feedbacks { get; set; } = new List<Feedback>();
-
-    public virtual ICollection<Product> Products { get; set; } = new List<Product>();
-
-    public virtual ICollection<Rating> Ratings { get; set; } = new List<Rating>();
+    public ICollection<Product> Products { get; set; }
+    public ICollection<Feedback> Feedbacks { get; set; }
+    public ICollection<Rating> Ratings { get; set; }
 }

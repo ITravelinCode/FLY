@@ -8,7 +8,6 @@ namespace FLY.DataAccess.Repositories
         IDbContextTransaction BeginTransaction();
         Task SaveAsync();
         IGenericRepository<Account> AccountRepository { get; }
-        IGenericRepository<AccountShop> AccountShopRepository { get; }
         IGenericRepository<Blog> BlogRepository { get; }
         IGenericRepository<Cart> CartRepository { get; }
         IGenericRepository<Feedback> FeedbackRepository { get; }

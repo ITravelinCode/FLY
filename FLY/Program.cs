@@ -23,9 +23,13 @@ builder.Services.AddDbContext<FlyContext>(options =>
 builder.Services.AddCors(options => options.AddDefaultPolicy(policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-
+//DI Service
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<ICustomerService, CustomerService>();
+builder.Services.AddScoped<IGoogleDriveService, GoogleDriveService>();
+builder.Services.AddScoped<IShopService, ShopService>();
+builder.Services.AddScoped<IProductService, ProductService>();
 
 // Register in-memory caching
 builder.Services.AddMemoryCache();

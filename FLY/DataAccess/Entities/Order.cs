@@ -1,21 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace FLY.DataAccess.Entities;
 
 public partial class Order
 {
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int OrderId { get; set; }
 
+    [Required]
     public int AccountId { get; set; }
 
+    [Required]
     public DateTime OrderDate { get; set; }
 
-    public double TotalPrice { get; set; }
+    [Required]
+    public float TotalPrice { get; set; }
 
+    [Required]
     public int Status { get; set; }
 
-    public virtual Account Account { get; set; } = null!;
+    [ForeignKey("AccountId")]
+    public Account Account { get; set; }
 
-    public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
+    public ICollection<OrderDetail> OrderDetails { get; set; }
 }

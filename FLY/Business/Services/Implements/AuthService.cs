@@ -346,15 +346,48 @@ namespace FLY.Business.Services.Implements
                 }
             }
         }
-        public async Task<bool> RegisterSeller(RegisterRequest registerCustomerRequest)
+        public async Task<bool> RegisterSeller(RegisterRequest registerSellerRequest)
         {
-            var existAccount = await _unitOfWork.AccountRepository.FindAsync(a => a.Email == registerCustomerRequest.Email);
-            if (existAccount.Any()) throw new ApiException(HttpStatusCode.BadRequest, "Email already registed");
+            var accounts = await _unitOfWork.AccountRepository.FindAsync(a => a.Email == registerSellerRequest.Email);
+            var existAccount = accounts.FirstOrDefault();
+            if (existAccount != null) 
+            {
+                var properties = existAccount.GetType().GetProperties();
+                var incompleteProperties = properties
+                    .Where(property => property.GetValue(existAccount) == null ||
+                        (property == typeof(string) && string.IsNullOrEmpty(property.GetValue(existAccount) as string)))
+                    .Select(property => property.Name);
+                if(incompleteProperties.Any())
+                {
+                    var incompleteFieldNames = string.Join(", ", incompleteProperties);
+                    throw new ApiException(HttpStatusCode.BadRequest, $"You need to complete the following information before registering as a seller: {incompleteFieldNames}");
+                }
+                else
+                {
+                    using (var transaction = _unitOfWork.BeginTransaction())
+                    {
+                        try
+                        {
+                            existAccount.Status = 2;
+                            existAccount.RoleId = 2;
+                            await _unitOfWork.AccountRepository.UpdateAsync(existAccount);
+                            await _unitOfWork.SaveAsync();
+                            await transaction.CommitAsync();
+                            return true;
+                        }
+                        catch
+                        {
+                            await transaction.RollbackAsync();
+                            return false;
+                        }
+                    }
+                }
+            }
             using (var transaction = _unitOfWork.BeginTransaction())
             {
                 try
                 {
-                    var account = _mapper.Map<Account>(registerCustomerRequest);
+                    var account = _mapper.Map<Account>(registerSellerRequest);
                     account.Status = 2;
                     account.RoleId = 2;
                     account.Password = await HashedPassword(account.Password);

@@ -12,7 +12,6 @@ namespace FLY.DataAccess.Repositories.Implements
 
         private readonly FlyContext context;
         private GenericRepository<Account> _accountRepository;
-        private GenericRepository<AccountShop> _accountShopRepository;
         private GenericRepository<Blog> _blogRepository;
         private GenericRepository<Cart> _cartRepository;
         private GenericRepository<Feedback> _feedbackRepository;
@@ -26,7 +25,6 @@ namespace FLY.DataAccess.Repositories.Implements
         private GenericRepository<VoucherOfshop> _voucherOfshopRepository;
 
         public IGenericRepository<Account> AccountRepository => _accountRepository ??= new GenericRepository<Account>(context);
-        public IGenericRepository<AccountShop> AccountShopRepository => _accountShopRepository ??= new GenericRepository<AccountShop>(context);
         public IGenericRepository<Blog> BlogRepository => _blogRepository ??= new GenericRepository<Blog>(context);
         public IGenericRepository<Cart> CartRepository => _cartRepository ??= new GenericRepository<Cart>(context);
         public IGenericRepository<Feedback> FeedbackRepository => _feedbackRepository ??= new GenericRepository<Feedback>(context);

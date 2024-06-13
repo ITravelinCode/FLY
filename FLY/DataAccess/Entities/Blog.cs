@@ -1,23 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace FLY.DataAccess.Entities;
 
 public partial class Blog
 {
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int BlogId { get; set; }
 
+    [Required]
     public int AccountId { get; set; }
 
-    public string BlogName { get; set; } = null!;
+    [Required]
+    [MaxLength(50)]
+    public string BlogName { get; set; }
 
-    public DateOnly BlogDate { get; set; }
+    [Required]
+    public DateTime BlogDate { get; set; }
 
-    public string BlogContent { get; set; } = null!;
+    [Required]
+    [MaxLength(350)]
+    public string BlogContent { get; set; }
 
-    public string BlogImage { get; set; } = null!;
+    [Required]
+    [MaxLength(250)]
+    public string BlogImage { get; set; }
 
+    [Required]
     public int Status { get; set; }
 
-    public virtual Account Account { get; set; } = null!;
+    [ForeignKey("AccountId")]
+    public Account Account { get; set; }
 }

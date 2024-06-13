@@ -1,21 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace FLY.DataAccess.Entities;
 
 public partial class Feedback
 {
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int FeedbackId { get; set; }
 
+    [Required]
     public int AccountId { get; set; }
 
+    [Required]
     public int ShopId { get; set; }
 
-    public string Content { get; set; } = null!;
+    [Required]
+    [MaxLength(250)]
+    public string Content { get; set; }
 
+    [Required]
     public int Status { get; set; }
 
-    public virtual Account Account { get; set; } = null!;
+    [ForeignKey("AccountId")]
+    public Account Account { get; set; }
 
-    public virtual Shop Shop { get; set; } = null!;
+    [ForeignKey("ShopId")]
+    public Shop Shop { get; set; }
 }

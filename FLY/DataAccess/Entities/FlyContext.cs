@@ -39,275 +39,145 @@ public partial class FlyContext : DbContext
 
     public virtual DbSet<VoucherOfshop> VoucherOfshops { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Data Source=LAPTOP-MQ52Q21P\\MSSQLSERVER01;Initial Catalog=FLY;User ID=sa;Password=12345;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False");
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Account>(entity =>
-        {
-            entity.ToTable("Account");
+        modelBuilder.Entity<Account>()
+                .Property(a => a.AccountId)
+                .ValueGeneratedOnAdd();
 
-            entity.Property(e => e.AccountId).HasColumnName("accountId");
-            entity.Property(e => e.Address).HasMaxLength(30);
-            entity.Property(e => e.Dob).HasColumnName("dob");
-            entity.Property(e => e.Email).HasMaxLength(30);
-            entity.Property(e => e.Password).HasColumnName("password");
-            entity.Property(e => e.Phone).HasMaxLength(10);
-            entity.Property(e => e.RoleId).HasColumnName("roleId");
-            entity.Property(e => e.Status).HasColumnName("status");
-            entity.Property(e => e.UserName)
-                .HasMaxLength(50)
-                .HasColumnName("userName");
-        });
+        modelBuilder.Entity<Shop>()
+            .Property(s => s.ShopId)
+            .ValueGeneratedOnAdd();
 
-        modelBuilder.Entity<Blog>(entity =>
-        {
-            entity.ToTable("Blog");
+        modelBuilder.Entity<VoucherOfshop>()
+            .Property(v => v.VoucherId)
+            .ValueGeneratedOnAdd();
 
-            entity.Property(e => e.BlogId).HasColumnName("blogId");
-            entity.Property(e => e.AccountId).HasColumnName("accountId");
-            entity.Property(e => e.BlogContent)
-                .HasMaxLength(350)
-                .HasColumnName("blogContent");
-            entity.Property(e => e.BlogDate).HasColumnName("blogDate");
-            entity.Property(e => e.BlogImage)
-                .HasMaxLength(250)
-                .HasColumnName("blogImage");
-            entity.Property(e => e.BlogName)
-                .HasMaxLength(50)
-                .HasColumnName("blogName");
-            entity.Property(e => e.Status).HasColumnName("status");
+        modelBuilder.Entity<ProductCategory>()
+            .Property(pc => pc.ProductCategoryId)
+            .ValueGeneratedOnAdd();
 
-            entity.HasOne(d => d.Account).WithMany(p => p.Blogs)
-                .HasForeignKey(d => d.AccountId)
-                .HasConstraintName("FK_Blog_Account");
-        });
+        modelBuilder.Entity<Product>()
+            .Property(p => p.ProductId)
+            .ValueGeneratedOnAdd();
 
-        modelBuilder.Entity<Cart>(entity =>
-        {
-            entity.ToTable("Cart");
+        modelBuilder.Entity<Cart>()
+            .Property(c => c.CartId)
+            .ValueGeneratedOnAdd();
 
-            entity.Property(e => e.CartId).HasColumnName("cartId");
-            entity.Property(e => e.AccountId).HasColumnName("accountId");
-            entity.Property(e => e.CartQuantity).HasColumnName("cartQuantity");
-            entity.Property(e => e.ProductId).HasColumnName("productId");
-            entity.Property(e => e.Status).HasColumnName("status");
+        modelBuilder.Entity<Blog>()
+            .Property(b => b.BlogId)
+            .ValueGeneratedOnAdd();
 
-            entity.HasOne(d => d.Account).WithMany(p => p.Carts)
-                .HasForeignKey(d => d.AccountId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Cart_Account");
+        modelBuilder.Entity<Order>()
+            .Property(o => o.OrderId)
+            .ValueGeneratedOnAdd();
 
-            entity.HasOne(d => d.Product).WithMany(p => p.Carts)
-                .HasForeignKey(d => d.ProductId)
-                .HasConstraintName("FK_Cart_Product");
-        });
+        modelBuilder.Entity<OrderDetail>()
+            .Property(od => od.OrderDetailId)
+            .ValueGeneratedOnAdd();
 
-        modelBuilder.Entity<Feedback>(entity =>
-        {
-            entity.ToTable("Feedback");
+        modelBuilder.Entity<Feedback>()
+            .Property(f => f.FeedbackId)
+            .ValueGeneratedOnAdd();
 
-            entity.Property(e => e.FeedbackId).HasColumnName("feedbackId");
-            entity.Property(e => e.AccountId).HasColumnName("accountId");
-            entity.Property(e => e.Content)
-                .HasMaxLength(250)
-                .HasColumnName("content");
-            entity.Property(e => e.ShopId).HasColumnName("shopId");
-            entity.Property(e => e.Status).HasColumnName("status");
+        modelBuilder.Entity<Rating>()
+            .Property(r => r.RateId)
+            .ValueGeneratedOnAdd();
 
-            entity.HasOne(d => d.Account).WithMany(p => p.Feedbacks)
-                .HasForeignKey(d => d.AccountId)
-                .HasConstraintName("FK_Feedback_Account");
+        modelBuilder.Entity<RefreshToken>()
+            .Property(rt => rt.RefreshTokenId)
+            .ValueGeneratedOnAdd();
 
-            entity.HasOne(d => d.Shop).WithMany(p => p.Feedbacks)
-                .HasForeignKey(d => d.ShopId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Feedback_Shop");
-        });
+        modelBuilder.Entity<Shop>()
+            .HasOne(s => s.Account)
+            .WithMany(a => a.Shops)
+            .HasForeignKey(s => s.AccountId)
+            .OnDelete(DeleteBehavior.Cascade);
 
-        modelBuilder.Entity<Order>(entity =>
-        {
-            entity.ToTable("Order");
+        modelBuilder.Entity<Product>()
+            .HasOne(p => p.Shop)
+            .WithMany(s => s.Products)
+            .HasForeignKey(p => p.ShopId)
+            .OnDelete(DeleteBehavior.Cascade);
 
-            entity.Property(e => e.OrderId).HasColumnName("orderId");
-            entity.Property(e => e.AccountId).HasColumnName("accountId");
-            entity.Property(e => e.OrderDate)
-                .HasColumnType("datetime")
-                .HasColumnName("orderDate");
-            entity.Property(e => e.Status).HasColumnName("status");
+        modelBuilder.Entity<Product>()
+            .HasOne(p => p.ProductCategory)
+            .WithMany(pc => pc.Products)
+            .HasForeignKey(p => p.ProductCategoryId)
+            .OnDelete(DeleteBehavior.Cascade);
 
-            entity.HasOne(d => d.Account).WithMany(p => p.Orders)
-                .HasForeignKey(d => d.AccountId)
-                .HasConstraintName("FK_Order_Account");
-        });
+        modelBuilder.Entity<Product>()
+            .HasOne(p => p.Voucher)
+            .WithMany(v => v.Products)
+            .HasForeignKey(p => p.VoucherId)
+            .OnDelete(DeleteBehavior.Cascade);
 
-        modelBuilder.Entity<OrderDetail>(entity =>
-        {
-            entity.ToTable("OrderDetail");
+        modelBuilder.Entity<Cart>()
+            .HasOne(c => c.Product)
+            .WithMany(p => p.Carts)
+            .HasForeignKey(c => c.ProductId)
+            .OnDelete(DeleteBehavior.Cascade);
 
-            entity.Property(e => e.OrderDetailId).HasColumnName("orderDetailId");
-            entity.Property(e => e.OrderId).HasColumnName("orderId");
-            entity.Property(e => e.OrderQuantity).HasColumnName("orderQuantity");
-            entity.Property(e => e.ProductId).HasColumnName("productId");
-            entity.Property(e => e.ProductPrice).HasColumnName("productPrice");
-            entity.Property(e => e.Status).HasColumnName("status");
+        modelBuilder.Entity<Cart>()
+            .HasOne(c => c.Account)
+            .WithMany(a => a.Carts)
+            .HasForeignKey(c => c.AccountId)
+            .OnDelete(DeleteBehavior.Restrict);
 
-            entity.HasOne(d => d.Order).WithMany(p => p.OrderDetails)
-                .HasForeignKey(d => d.OrderId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_OrderDetail_Order");
+        modelBuilder.Entity<Blog>()
+            .HasOne(b => b.Account)
+            .WithMany(a => a.Blogs)
+            .HasForeignKey(b => b.AccountId)
+            .OnDelete(DeleteBehavior.Cascade);
 
-            entity.HasOne(d => d.Product).WithMany(p => p.OrderDetails)
-                .HasForeignKey(d => d.ProductId)
-                .HasConstraintName("FK_OrderDetail_Account");
-        });
+        modelBuilder.Entity<Order>()
+            .HasOne(o => o.Account)
+            .WithMany(a => a.Orders)
+            .HasForeignKey(o => o.AccountId)
+            .OnDelete(DeleteBehavior.Cascade);
 
-        modelBuilder.Entity<Product>(entity =>
-        {
-            entity.ToTable("Product");
+        modelBuilder.Entity<OrderDetail>()
+            .HasOne(od => od.Order)
+            .WithMany(o => o.OrderDetails)
+            .HasForeignKey(od => od.OrderId)
+            .OnDelete(DeleteBehavior.Restrict);
 
-            entity.Property(e => e.ProductId).HasColumnName("productId");
-            entity.Property(e => e.ImageProduct)
-                .HasMaxLength(250)
-                .HasColumnName("imageProduct");
-            entity.Property(e => e.ProductCategoryId).HasColumnName("productCategoryId");
-            entity.Property(e => e.ProductInfor)
-                .HasMaxLength(250)
-                .HasColumnName("productInfor");
-            entity.Property(e => e.ProductName)
-                .HasMaxLength(50)
-                .HasColumnName("productName");
-            entity.Property(e => e.ProductPrice).HasColumnName("productPrice");
-            entity.Property(e => e.ProductQuatity)
-                .HasColumnType("datetime")
-                .HasColumnName("productQuatity");
-            entity.Property(e => e.ShopId).HasColumnName("shopId");
-            entity.Property(e => e.Status).HasColumnName("status");
-            entity.Property(e => e.VoucherId).HasColumnName("voucherId");
+        modelBuilder.Entity<OrderDetail>()
+            .HasOne(od => od.Product)
+            .WithMany(p => p.OrderDetails)
+            .HasForeignKey(od => od.ProductId)
+            .OnDelete(DeleteBehavior.Cascade);
 
-            entity.HasOne(d => d.ProductCategory).WithMany(p => p.Products)
-                .HasForeignKey(d => d.ProductCategoryId)
-                .HasConstraintName("FK_Product_pRODUCTcATEGORY");
+        modelBuilder.Entity<Feedback>()
+            .HasOne(f => f.Account)
+            .WithMany(a => a.Feedbacks)
+            .HasForeignKey(f => f.AccountId)
+            .OnDelete(DeleteBehavior.Cascade);
 
-            entity.HasOne(d => d.Shop).WithMany(p => p.Products)
-                .HasForeignKey(d => d.ShopId)
-                .HasConstraintName("FK_Product_Shop");
+        modelBuilder.Entity<Feedback>()
+            .HasOne(f => f.Shop)
+            .WithMany(s => s.Feedbacks)
+            .HasForeignKey(f => f.ShopId)
+            .OnDelete(DeleteBehavior.Restrict);
 
-            entity.HasOne(d => d.Voucher).WithMany(p => p.Products)
-                .HasForeignKey(d => d.VoucherId)
-                .OnDelete(DeleteBehavior.Cascade)
-                .HasConstraintName("FK_Product_Voucher");
-        });
+        modelBuilder.Entity<Rating>()
+            .HasOne(r => r.Account)
+            .WithMany(a => a.Ratings)
+            .HasForeignKey(r => r.AccountId)
+            .OnDelete(DeleteBehavior.Cascade);
 
-        modelBuilder.Entity<ProductCategory>(entity =>
-        {
-            entity.ToTable("ProductCategory");
+        modelBuilder.Entity<Rating>()
+            .HasOne(r => r.Shop)
+            .WithMany(s => s.Ratings)
+            .HasForeignKey(r => r.ShopId)
+            .OnDelete(DeleteBehavior.Restrict);
 
-            entity.Property(e => e.ProductCategoryId).HasColumnName("productCategoryId");
-            entity.Property(e => e.ImageProduct)
-                .HasMaxLength(250)
-                .HasColumnName("imageProduct");
-            entity.Property(e => e.ProductCategoryName)
-                .HasMaxLength(50)
-                .HasColumnName("productCategoryName");
-            entity.Property(e => e.Status).HasColumnName("status");
-        });
-
-        modelBuilder.Entity<Rating>(entity =>
-        {
-            entity.HasKey(e => e.RateId);
-
-            entity.ToTable("Rating");
-
-            entity.Property(e => e.RateId).HasColumnName("rateId");
-            entity.Property(e => e.AccountId).HasColumnName("accountId");
-            entity.Property(e => e.RateNumber).HasColumnName("rateNumber");
-            entity.Property(e => e.ShopId).HasColumnName("shopId");
-            entity.Property(e => e.Status).HasColumnName("status");
-
-            entity.HasOne(d => d.Account).WithMany(p => p.Ratings)
-                .HasForeignKey(d => d.AccountId)
-                .HasConstraintName("FK_Rating_Account");
-
-            entity.HasOne(d => d.Shop).WithMany(p => p.Ratings)
-                .HasForeignKey(d => d.ShopId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Rating_Shop");
-        });
-
-        modelBuilder.Entity<RefreshToken>(entity =>
-        {
-            entity.HasKey(e => e.RefreshTokenId);
-
-            entity.ToTable("RefreshToken");
-
-            entity.Property(e => e.AccountId).HasColumnName("accountId");
-            entity.Property(e => e.DeviceName)
-                .HasMaxLength(150)
-                .IsUnicode(false)
-                .HasColumnName("deviceName");
-            entity.Property(e => e.ExpiredDate)
-                .HasColumnType("datetime")
-                .HasColumnName("expiredDate");
-            entity.Property(e => e.Status).HasColumnName("status");
-            entity.Property(e => e.Token)
-                .IsUnicode(false)
-                .HasColumnName("token");
-
-            entity.HasOne(d => d.Account).WithMany(p => p.RefreshTokens)
-                .HasForeignKey(d => d.AccountId)
-                .HasConstraintName("FK_RefreshToken_Account");
-        });
-
-        modelBuilder.Entity<Shop>(entity =>
-        {
-            entity.ToTable("Shop");
-
-            entity.Property(e => e.ShopId).HasColumnName("shopId");
-            entity.Property(e => e.AccountId).HasColumnName("accountId");
-            entity.Property(e => e.ShopAddress)
-                .HasMaxLength(250)
-                .HasColumnName("shopAddress");
-            entity.Property(e => e.ShopDetail)
-                .HasMaxLength(250)
-                .HasColumnName("shopDetail");
-            entity.Property(e => e.ShopEndTime)
-                .HasColumnType("datetime")
-                .HasColumnName("shopEndTime");
-            entity.Property(e => e.ShopName)
-                .HasMaxLength(50)
-                .HasColumnName("shopName");
-            entity.Property(e => e.ShopStartTime)
-                .HasColumnType("datetime")
-                .HasColumnName("shopStartTime");
-            entity.Property(e => e.Status).HasColumnName("status");
-
-            entity.HasOne(d => d.Account).WithMany(p => p.Shops)
-                .HasForeignKey(d => d.AccountId)
-                .HasConstraintName("FK_Shop_Account");
-        });
-
-        modelBuilder.Entity<VoucherOfshop>(entity =>
-        {
-            entity.HasKey(e => e.VoucherId);
-
-            entity.ToTable("VoucherOFShop");
-
-            entity.Property(e => e.VoucherId).HasColumnName("voucherId");
-            entity.Property(e => e.Status).HasColumnName("status");
-            entity.Property(e => e.VoucherEnd)
-                .HasColumnType("datetime")
-                .HasColumnName("voucherEnd");
-            entity.Property(e => e.VoucherName)
-                .HasMaxLength(50)
-                .HasColumnName("voucherName");
-            entity.Property(e => e.VoucherStart)
-                .HasColumnType("datetime")
-                .HasColumnName("voucherStart");
-            entity.Property(e => e.VoucherValue).HasColumnName("voucherValue");
-        });
+        modelBuilder.Entity<RefreshToken>()
+            .HasOne(rt => rt.Account)
+            .WithMany(a => a.RefreshTokens)
+            .HasForeignKey(rt => rt.AccountId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         OnModelCreatingPartial(modelBuilder);
     }
