@@ -6,5 +6,7 @@ namespace FLY.Business.Services
     {
         Task<List<ProductResponse>> GetAllProductsAsync();
         Task<ProductResponse> GetProductByIdAsync(int id);
+        Task<List<ProductResponse>> GetProductsByCategoryAsync(string categoryName);
+        Task<List<ProductResponse>> GetProductsByNameAsync(string name);
     }
 }

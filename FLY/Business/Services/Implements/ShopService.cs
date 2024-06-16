@@ -43,5 +43,18 @@ namespace FLY.Business.Services.Implements
                 throw new Exception(ex.Message);
             }
         }
+        public async Task<List<ShopResponse>> GetShopByNameAsync(string name)
+        {
+            try
+            {
+                var shops = await _unitOfWork.ShopRepository.FindAsync(s => s.ShopName.Contains(name));
+                var result = _mapper.Map<List<ShopResponse>>(shops.ToList());
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
     }
 }

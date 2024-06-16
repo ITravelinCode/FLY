@@ -6,5 +6,6 @@ namespace FLY.Business.Services
     {
         Task<List<ShopResponse>> GetAllShopsAsync();
         Task<ShopResponse> GetShopByIdAsync(int id);
+        Task<List<ShopResponse>> GetShopByNameAsync(string name);
     }
 }

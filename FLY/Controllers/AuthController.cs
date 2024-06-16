@@ -22,6 +22,13 @@ namespace FLY.Controllers
             _authService = authService;
         }
 
+        [Authorize(Policy = "RequireAdminRole")]
+        [HttpGet("/api/v1/admin-test")]
+        public IActionResult AdminTest()
+        {
+            return Ok("Hello Admin");
+        }
+
         [AllowAnonymous]
         [HttpPost("/api/v1/auth")]
         public async Task<IActionResult> Login([FromBody] AuthRequest loginInfo)

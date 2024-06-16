@@ -44,5 +44,31 @@ namespace FLY.Business.Services.Implements
                 throw new Exception(ex.Message);
             }
         }
+
+        public async Task<List<ProductResponse>> GetProductsByCategoryAsync(string categoryName)
+        {
+            try
+            {
+                var products = await _unitOfWork.ProductRepository.FindAsync(p => p.ProductCategory.ProductCategoryName == categoryName);
+                return _mapper.Map<List<ProductResponse>>(products.ToList());
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<List<ProductResponse>> GetProductsByNameAsync(string name)
+        {
+            try
+            {
+                var products = await _unitOfWork.ProductRepository.FindAsync(p => p.ProductName.Contains(name));
+                return _mapper.Map<List<ProductResponse>>(products.ToList());
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
     }
 }
