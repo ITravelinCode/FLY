@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
+using FLY.Business.BackgroundServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -54,7 +55,7 @@ builder.Services.AddAuthorization(options =>
 // Configure Swagger
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "JwtAuthDemo", Version = "v1" });
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "FLY API", Version = "v1" });
 
     // Configure Swagger to use JWT Authentication
     var securitySchema = new OpenApiSecurityScheme
@@ -106,6 +107,9 @@ builder.Services.AddScoped<IProductService, ProductService>();
 // Register in-memory caching
 builder.Services.AddMemoryCache();
 
+//Register backgroundService
+builder.Services.AddHostedService<TokenCleanupService>();
+
 DotNetEnv.Env.Load();
 
 var app = builder.Build();
@@ -115,7 +119,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
     app.UseSwagger();
-    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "JwtAuthDemo v1"));
+    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "FLY API v1"));
 }
 
 app.UseCors();
