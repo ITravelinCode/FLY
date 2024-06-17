@@ -3,11 +3,8 @@ using FLY.Business.Models.Account;
 using FLY.Business.Models.GoogleCloud;
 using FLY.Business.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using static Google.Apis.Requests.BatchRequest;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace FLY.Controllers
 {
@@ -22,11 +19,10 @@ namespace FLY.Controllers
             _authService = authService;
         }
 
-        [Authorize(Policy = "RequireAdminRole")]
-        [HttpGet("/api/v1/admin-test")]
-        public IActionResult AdminTest()
+        [HttpGet("/customer-test"), Authorize(Policy = "CustomerPolicy")]
+        public IActionResult TestCustomerPolicy()
         {
-            return Ok("Hello Admin");
+            return Ok(new { message = "This is endpoint of customer." });
         }
 
         [AllowAnonymous]
