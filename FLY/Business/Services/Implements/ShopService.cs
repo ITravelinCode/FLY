@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using FLY.Business.Models.Product;
 using FLY.Business.Models.Shop;
 using FLY.DataAccess.Repositories;
 using FLY.DataAccess.Repositories.Implements;
@@ -52,6 +53,20 @@ namespace FLY.Business.Services.Implements
                 return result;
             }
             catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+        public async Task<ShopResponse> GetShopByAccountId(int accountId)
+        {
+            try
+            {
+                var shop = await _unitOfWork.ShopRepository.GetAsync(s => s.AccountId == accountId, 
+                    null,"Products");
+                var result = _mapper.Map<ShopResponse>(shop.FirstOrDefault());
+                return result;
+            }
+            catch(Exception ex)
             {
                 throw new Exception(ex.Message);
             }

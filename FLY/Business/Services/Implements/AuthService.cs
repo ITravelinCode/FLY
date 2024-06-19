@@ -179,7 +179,7 @@ namespace FLY.Business.Services.Implements
                                     {
                                         new Claim(ClaimTypes.Role, account.RoleId.ToString()),
                                         new Claim(ClaimTypes.Email, account.Email),
-                                        new Claim(ClaimTypes.UserData, account.AccountId.ToString())
+                                        new Claim("accountId", account.AccountId.ToString())
                                     }),
                                     Expires = DateTime.UtcNow.AddHours(1),
                                     Issuer = _configuration["Jwt:Issuer"],
@@ -273,7 +273,7 @@ namespace FLY.Business.Services.Implements
                         {
                             new Claim(ClaimTypes.Role, account.RoleId.ToString()),
                             new Claim(ClaimTypes.Email, account.Email),
-                            new Claim(ClaimTypes.UserData, account.AccountId.ToString()),
+                            new Claim("accountId", account.AccountId.ToString()),
                             new Claim("sessionId", sessionId)
                         }),
                         Expires = DateTime.UtcNow.AddHours(1),
@@ -464,7 +464,7 @@ namespace FLY.Business.Services.Implements
                             {
                                 new Claim(ClaimTypes.Role, account.RoleId.ToString()),
                                 new Claim(ClaimTypes.Email, account.Email),
-                                new Claim(ClaimTypes.UserData, account.UserName)
+                                new Claim("accountId", account.UserName)
                             };
                             var accessExpiration = DateTime.UtcNow.AddHours(1);
                             var accessJwt = new JwtSecurityToken(_configuration["Jwt:Issuer"], _configuration["Jwt:Audience"], accessClaims, expires: accessExpiration, signingCredentials: credentials);
