@@ -69,11 +69,11 @@ namespace FLY.Business.Services.Implements
             }
         }
 
-        public async Task<bool> AuthenticateAccountAdvanced(AuthResponse authReponse)
+        public async Task<bool> AuthenticateAccountAdvanced(AuthResponse authResponse)
         {
             try
             {
-                string emailReturn = authReponse.Email;
+                string emailReturn = authResponse.Email;
                 var account = _unitOfWork.AccountRepository.FindAsync(a => a.Email == emailReturn).Result.FirstOrDefault();
                 if (account != null)
                 {
@@ -179,7 +179,7 @@ namespace FLY.Business.Services.Implements
                                     {
                                         new Claim(ClaimTypes.Role, account.RoleId.ToString()),
                                         new Claim(ClaimTypes.Email, account.Email),
-                                        new Claim(ClaimTypes.Name, account.UserName)
+                                        new Claim(ClaimTypes.UserData, account.AccountId.ToString())
                                     }),
                                     Expires = DateTime.UtcNow.AddHours(1),
                                     Issuer = _configuration["Jwt:Issuer"],
@@ -253,6 +253,13 @@ namespace FLY.Business.Services.Implements
         {
             try
             {
+                var cacheKey = $"Account_{email}";
+                if(_memoryCache.TryGetValue(cacheKey, out string? item))
+                {
+                    _memoryCache.Remove(cacheKey);
+                }
+                var sessionId = Guid.NewGuid().ToString();
+                _memoryCache.Set($"Account_{email}", sessionId, TimeSpan.FromDays(7));
                 var accounts = await _unitOfWork.AccountRepository.FindAsync(a => a.Email == email);
                 if (accounts.Any())
                 {
@@ -266,7 +273,8 @@ namespace FLY.Business.Services.Implements
                         {
                             new Claim(ClaimTypes.Role, account.RoleId.ToString()),
                             new Claim(ClaimTypes.Email, account.Email),
-                            new Claim(ClaimTypes.Name, account.UserName)
+                            new Claim(ClaimTypes.UserData, account.AccountId.ToString()),
+                            new Claim("sessionId", sessionId)
                         }),
                         Expires = DateTime.UtcNow.AddHours(1),
                         Issuer = _configuration["Jwt:Issuer"],
@@ -281,7 +289,7 @@ namespace FLY.Business.Services.Implements
                     {
                         Subject = new ClaimsIdentity(new[]
                         {
-                       new Claim(ClaimTypes.Email, account.Email)
+                            new Claim(ClaimTypes.Email, account.Email)
                         }),
                         Expires = DateTime.UtcNow.AddDays(7),
                         Issuer = _configuration["Jwt:Issuer"],
@@ -453,19 +461,19 @@ namespace FLY.Business.Services.Implements
                             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
                             var accessClaims = new List<Claim>
-                        {
-                            new Claim(ClaimTypes.Role, account.RoleId.ToString()),
-                            new Claim(ClaimTypes.Email, account.Email),
-                            new Claim(ClaimTypes.UserData, account.UserName)
-                        };
+                            {
+                                new Claim(ClaimTypes.Role, account.RoleId.ToString()),
+                                new Claim(ClaimTypes.Email, account.Email),
+                                new Claim(ClaimTypes.UserData, account.UserName)
+                            };
                             var accessExpiration = DateTime.UtcNow.AddHours(1);
                             var accessJwt = new JwtSecurityToken(_configuration["Jwt:Issuer"], _configuration["Jwt:Audience"], accessClaims, expires: accessExpiration, signingCredentials: credentials);
                             var newAccessToken = new JwtSecurityTokenHandler().WriteToken(accessJwt);
 
                             var refreshClaims = new List<Claim>
-                        {
-                            new Claim(ClaimTypes.Email, account.Email)
-                        };
+                            {
+                                new Claim(ClaimTypes.Email, account.Email)
+                            };
                             var refreshExpiration = DateTime.UtcNow.AddDays(7);
                             var refreshJwt = new JwtSecurityToken(_configuration["Jwt:Issuer"], _configuration["Jwt:Audience"], refreshClaims, expires: accessExpiration, signingCredentials: credentials);
                             var newRefreshToken = new JwtSecurityTokenHandler().WriteToken(accessJwt);

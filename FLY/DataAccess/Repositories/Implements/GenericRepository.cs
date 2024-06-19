@@ -61,7 +61,7 @@ namespace FLY.DataAccess.Repositories.Implements
             }
             if(pageIndex.HasValue && pageSize.HasValue)
             {
-                int validPageIndex = pageIndex.Value > 0 ? pageIndex.Value -1 : 1;
+                int validPageIndex = pageIndex.Value > 0 ? pageIndex.Value - 1 : 1;
                 int validPageSize = pageSize.HasValue ? pageSize.Value : 10;
                 query = query.Skip(validPageIndex * validPageSize).Take(validPageIndex);
             }
@@ -82,6 +82,18 @@ namespace FLY.DataAccess.Repositories.Implements
         {
             dbSet.Attach(entityToUpdate);
             context.Entry(entityToUpdate).State = EntityState.Modified;
+        }
+
+        public async Task<int> CountAsync(Expression<Func<TEntity, bool>> filter = null)
+        {
+            IQueryable<TEntity> query = dbSet;
+
+            if (filter != null)
+            {
+                query = query.Where(filter);
+            }
+
+            return await query.CountAsync();
         }
     }
 }

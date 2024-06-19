@@ -25,7 +25,7 @@ namespace FLY.Business.Middlewares
                 var authRequest = JsonConvert.DeserializeObject<AuthRequest>(body);
                 if(authRequest != null)
                 {
-                    var properties = body.GetType().GetProperties();
+                    var properties = authRequest.GetType().GetProperties();
                     foreach (var property in properties)
                     {
                         var value = property.GetValue(authRequest);
@@ -43,12 +43,6 @@ namespace FLY.Business.Middlewares
                         return;
                     }
                 }
-            }
-            else
-            {
-                context.Response.StatusCode = StatusCodes.Status400BadRequest;
-                await context.Response.WriteAsync("Request cannot be null");
-                return;
             }
             await _next(context);
         }
