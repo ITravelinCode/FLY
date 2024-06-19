@@ -1,36 +1,34 @@
 ﻿using FLY.Business.Models.Account;
 using Newtonsoft.Json;
-using System.Net;
 using System.Net.Mail;
 using System.Text.RegularExpressions;
 
 namespace FLY.Business.Middlewares
 {
-    public class AuthMiddleware
+    public class RegisterMiddleware
     {
         private readonly RequestDelegate _next;
 
-        public AuthMiddleware(RequestDelegate next)
+        public RegisterMiddleware(RequestDelegate next)
         {
             _next = next;
         }
-
         public async Task InvokeAsync(HttpContext context)
         {
-            if(context.Request.Path.StartsWithSegments("/api/v1/auth") && context.Request.Method == "POST")
+            if(context.Request.Path.StartsWithSegments("/api/v1/register") && context.Request.Method == "POST")
             {
                 context.Request.EnableBuffering();
                 var body = await new StreamReader(context.Request.Body).ReadToEndAsync();
                 context.Request.Body.Position = 0;
 
-                var authRequest = JsonConvert.DeserializeObject<AuthRequest>(body);
-                if(authRequest != null)
+                var registerRequest = JsonConvert.DeserializeObject<RegisterRequest>(body);
+                if (registerRequest != null)
                 {
-                    var properties = authRequest.GetType().GetProperties();
+                    var properties = registerRequest.GetType().GetProperties();
                     foreach (var property in properties)
                     {
-                        var value = property.GetValue(authRequest);
-                        if(value == null || (value is string && string.IsNullOrEmpty(value as string))) 
+                        var value = property.GetValue(registerRequest);
+                        if (value == null || (value is string && string.IsNullOrEmpty(value as string)))
                         {
                             context.Response.StatusCode = StatusCodes.Status400BadRequest;
                             context.Response.ContentType = "application/json";
@@ -38,16 +36,28 @@ namespace FLY.Business.Middlewares
                             return;
                         }
                     }
-                    if (!isValidatedEmail(authRequest.Email))
+                    if (!isValidatedEmail(registerRequest.Email))
                     {
                         context.Response.StatusCode = StatusCodes.Status400BadRequest;
                         context.Response.ContentType = "application/json";
                         await context.Response.WriteAsync("Email is not in a correct format.");
                         return;
                     }
+                    if(!isValidPhone(registerRequest.Phone))
+                    {
+                        context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                        context.Response.ContentType = "application/json";
+                        await context.Response.WriteAsync("Phone is not in a correct format.");
+                        return;
+                    }
                 }
             }
             await _next(context);
+        }
+        private bool isValidPhone(string? phone)
+        {
+            var regex = new Regex(@"^(09|03|\+84)[0-9]{8}$");
+            return regex.IsMatch(phone);
         }
 
         private bool isValidatedEmail(string emailAddress)

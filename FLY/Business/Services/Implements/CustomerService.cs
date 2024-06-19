@@ -31,7 +31,7 @@ namespace FLY.Business.Services.Implements
             {
                 try
                 {
-                    _mapper.Map(existedAccount, request);
+                    _mapper.Map(request, existedAccount);
                     await _unitOfWork.AccountRepository.UpdateAsync(existedAccount);
                     await _unitOfWork.SaveAsync();
                     await transaction.CommitAsync();

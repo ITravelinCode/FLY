@@ -362,7 +362,7 @@ namespace FLY.Business.Services.Implements
         public async Task<bool> RegisterCustomer(RegisterRequest registerCustomerRequest)
         {
             var existAccount = await _unitOfWork.AccountRepository.FindAsync(a => a.Email == registerCustomerRequest.Email);
-            if (existAccount.Any()) throw new ApiException(HttpStatusCode.BadRequest, "Email already registed");
+            if (existAccount.Any()) throw new ApiException(HttpStatusCode.BadRequest, "Email already registered");
             using (var transaction = _unitOfWork.BeginTransaction())
             {
                 try
@@ -387,7 +387,7 @@ namespace FLY.Business.Services.Implements
         {
             var accounts = await _unitOfWork.AccountRepository.FindAsync(a => a.Email == registerSellerRequest.Email);
             var existAccount = accounts.FirstOrDefault();
-            if (existAccount != null) 
+            if (existAccount != null)
             {
                 var properties = existAccount.GetType().GetProperties();
                 var incompleteProperties = properties
