@@ -184,6 +184,9 @@ namespace FLY.Migrations
                     b.Property<int>("AccountId")
                         .HasColumnType("int");
 
+                    b.Property<int>("ShopId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("datetime2");
 
@@ -194,6 +197,8 @@ namespace FLY.Migrations
                         .HasColumnType("real");
 
                     b.HasKey("OrderId");
+
+                    b.HasIndex("ShopId");
 
                     b.HasIndex("AccountId");
 
@@ -425,6 +430,9 @@ namespace FLY.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
+                    b.Property<int>("ShopId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("VoucherEnd")
                         .HasColumnType("datetime2");
 
@@ -440,7 +448,7 @@ namespace FLY.Migrations
                         .HasColumnType("real");
 
                     b.HasKey("VoucherId");
-
+                    b.HasIndex("ShopId");
                     b.ToTable("VoucherOfshops");
                 });
 
@@ -500,7 +508,12 @@ namespace FLY.Migrations
                         .HasForeignKey("AccountId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
+                    b.HasOne("FLY.DataAccess.Entities.Shop", "Shop")
+                        .WithMany("Orders")
+                        .HasForeignKey("ShopId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                    b.Navigation("Shop");
                     b.Navigation("Account");
                 });
 
@@ -631,11 +644,18 @@ namespace FLY.Migrations
                     b.Navigation("Products");
 
                     b.Navigation("Ratings");
+                    b.Navigation("VoucherOfshops");
+
                 });
 
             modelBuilder.Entity("FLY.DataAccess.Entities.VoucherOfshop", b =>
-                {
-                    b.Navigation("Products");
+            {
+                b.HasOne("FLY.DataAccess.Entities.Shop", "Shop")
+                    .WithMany("VoucherOfshops")
+                    .HasForeignKey("ShopId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+                b.Navigation("Products");
                 });
 #pragma warning restore 612, 618
         }

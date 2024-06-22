@@ -48,22 +48,7 @@ namespace FLY.Migrations
                     table.PrimaryKey("PK_ProductCategories", x => x.ProductCategoryId);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "VoucherOfshops",
-                columns: table => new
-                {
-                    VoucherId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    VoucherName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    VoucherValue = table.Column<float>(type: "real", nullable: false),
-                    VoucherStart = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    VoucherEnd = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_VoucherOfshops", x => x.VoucherId);
-                });
+           
 
             migrationBuilder.CreateTable(
                 name: "Blogs",
@@ -89,28 +74,7 @@ namespace FLY.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "Orders",
-                columns: table => new
-                {
-                    OrderId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    AccountId = table.Column<int>(type: "int", nullable: false),
-                    OrderDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    TotalPrice = table.Column<float>(type: "real", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Orders", x => x.OrderId);
-                    table.ForeignKey(
-                        name: "FK_Orders_Accounts_AccountId",
-                        column: x => x.AccountId,
-                        principalTable: "Accounts",
-                        principalColumn: "AccountId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
+           
             migrationBuilder.CreateTable(
                 name: "RefreshTokens",
                 columns: table => new
@@ -158,6 +122,59 @@ namespace FLY.Migrations
                         principalColumn: "AccountId",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateTable(
+               name: "Orders",
+               columns: table => new
+               {
+                   OrderId = table.Column<int>(type: "int", nullable: false)
+                       .Annotation("SqlServer:Identity", "1, 1"),
+                   AccountId = table.Column<int>(type: "int", nullable: false),
+                   ShopId = table.Column<int>(type: "int", nullable: false),
+                   OrderDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                   TotalPrice = table.Column<float>(type: "real", nullable: false),
+                   Status = table.Column<int>(type: "int", nullable: false)
+               },
+               constraints: table =>
+               {
+                   table.PrimaryKey("PK_Orders", x => x.OrderId);
+                   table.ForeignKey(
+                       name: "FK_Orders_Accounts_AccountId",
+                       column: x => x.AccountId,
+                       principalTable: "Accounts",
+                       principalColumn: "AccountId",
+                       onDelete: ReferentialAction.Cascade);
+                   table.ForeignKey(
+                       name: "FK_Orders_Shops_ShopId",
+                       column: x => x.ShopId,
+                       principalTable: "Shops",
+                       principalColumn: "ShopId",
+                       onDelete: ReferentialAction.NoAction);
+               });
+
+            migrationBuilder.CreateTable(
+               name: "VoucherOfshops",
+               columns: table => new
+               {
+                   VoucherId = table.Column<int>(type: "int", nullable: false)
+                       .Annotation("SqlServer:Identity", "1, 1"),
+                   VoucherName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                   VoucherValue = table.Column<float>(type: "real", nullable: false),
+                   ShopId = table.Column<int>(type: "int", nullable: false),
+                   VoucherStart = table.Column<DateTime>(type: "datetime2", nullable: false),
+                   VoucherEnd = table.Column<DateTime>(type: "datetime2", nullable: false),
+                   Status = table.Column<int>(type: "int", nullable: false)
+               },
+               constraints: table =>
+               {
+                   table.PrimaryKey("PK_VoucherOfshops", x => x.VoucherId);
+                   table.ForeignKey(
+                      name: "FK_VoucherOfshops_Shops_ShopId",
+                      column: x => x.ShopId,
+                      principalTable: "Shops",
+                      principalColumn: "ShopId",
+                      onDelete: ReferentialAction.NoAction);
+               });
 
             migrationBuilder.CreateTable(
                 name: "Feedbacks",
@@ -337,6 +354,11 @@ namespace FLY.Migrations
                 column: "ShopId");
 
             migrationBuilder.CreateIndex(
+               name: "IX_VoucherOfshops_ShopId",
+               table: "VoucherOfshops",
+               column: "ShopId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_OrderDetails_OrderId",
                 table: "OrderDetails",
                 column: "OrderId");
@@ -350,6 +372,11 @@ namespace FLY.Migrations
                 name: "IX_Orders_AccountId",
                 table: "Orders",
                 column: "AccountId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Orders_ShopId",
+                table: "Orders",
+                column: "ShopId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Products_ProductCategoryId",

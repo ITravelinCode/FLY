@@ -14,6 +14,8 @@ public partial class VoucherOfshop
     [Required]
     [MaxLength(50)]
     public string VoucherName { get; set; }
+    [Required]
+    public int ShopId { get; set; }
 
     [Required]
     public float VoucherValue { get; set; }
@@ -28,4 +30,6 @@ public partial class VoucherOfshop
     public int Status { get; set; }
 
     public ICollection<Product> Products { get; set; }
+    [ForeignKey("ShopId")]
+    public Shop Shop { get; set; }
 }

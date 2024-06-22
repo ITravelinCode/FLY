@@ -2,6 +2,8 @@
 {
     public class ProductRequest
     {
+        public int ProductId { get; set; }
+
         public int ShopId { get; set; }
 
         public int? VoucherId { get; set; }

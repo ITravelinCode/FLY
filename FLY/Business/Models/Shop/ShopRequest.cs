@@ -2,6 +2,8 @@
 {
     public class ShopRequest
     {
+        public int ShopId { get; set; }
+
         public string ShopName { get; set; } = null!;
 
         public string ShopDetail { get; set; } = null!;

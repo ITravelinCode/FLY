@@ -41,4 +41,6 @@ public partial class Shop
     public ICollection<Product> Products { get; set; }
     public ICollection<Feedback> Feedbacks { get; set; }
     public ICollection<Rating> Ratings { get; set; }
+    public ICollection<VoucherOfshop> VoucherOfshops { get; set; }
+
 }

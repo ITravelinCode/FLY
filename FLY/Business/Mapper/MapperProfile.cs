@@ -2,10 +2,13 @@
 using FLY.Business.Models.Account;
 using FLY.Business.Models.Customer;
 using FLY.Business.Models.Feedback;
+using FLY.Business.Models.Order;
+using FLY.Business.Models.OrderDetail;
 using FLY.Business.Models.Product;
 using FLY.Business.Models.ProductCategory;
 using FLY.Business.Models.Rating;
 using FLY.Business.Models.Shop;
+using FLY.Business.Models.VoucherOfShop;
 using FLY.DataAccess.Entities;
 
 namespace FLY.Business.Mapper
@@ -33,6 +36,15 @@ namespace FLY.Business.Mapper
             CreateMap<ProductCategory, ProductCategoryResponse>();
             ///Mapper Customer
             CreateMap<UpdateInfoRequest, Account>();
+            ///Mapper Voucher
+            CreateMap<VoucherOfshop, VoucherOfShopResponse>();
+            CreateMap<VoucherOfShopRequest, VoucherOfshop>();
+            ///Mapper Order
+            CreateMap<Order, OrderResponse>();
+            CreateMap<OrderResponse, Order>();
+            ///Mapper OrderDetail
+            CreateMap<OrderDetail, OrderDetailResponse>();
+            CreateMap<OrderDetailRequest, OrderDetail>();
         }
     }
 }

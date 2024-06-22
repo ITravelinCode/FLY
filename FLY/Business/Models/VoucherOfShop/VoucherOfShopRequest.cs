@@ -1,9 +1,8 @@
 ﻿using FLY.Business.Models.Product;
-using System.ComponentModel.DataAnnotations;
 
 namespace FLY.Business.Models.VoucherOfShop
 {
-    public class VoucherOfShopResponse
+    public class VoucherOfShopRequest
     {
         public int VoucherId { get; set; }
         public int ShopId { get; set; }
