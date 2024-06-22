@@ -3,6 +3,7 @@ using FLY.Business.Models.Product;
 using FLY.Business.Models.Shop;
 using FLY.DataAccess.Repositories;
 using FLY.DataAccess.Repositories.Implements;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace FLY.Business.Services.Implements
 {
@@ -10,20 +11,32 @@ namespace FLY.Business.Services.Implements
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IMemoryCache _cache;
+        private static readonly Random _random = new Random();
 
-        public ProductService(IUnitOfWork unitOfWork, IMapper mapper)
+        public ProductService(IUnitOfWork unitOfWork, IMapper mapper, IMemoryCache cache)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _cache = cache;
         }
 
-        public async Task<List<ProductResponse>> GetAllProductsAsync()
+        public async Task<List<ProductResponse>> GetAllProductsAsync(string sessionId, int pageIndex, int pageSize)
         {
             try
             {
-                var productList = await _unitOfWork.ProductRepository.GetAsync(null, null, "ProductCategory,Shop");
-                var result = _mapper.Map<List<ProductResponse>>(productList.ToList());
-                return result;
+                var cacheKey = $"Product_{sessionId}";
+                if (!_cache.TryGetValue(cacheKey, out List<ProductResponse> shuffledItems))
+                {
+                    var productList = await _unitOfWork.ProductRepository
+                        .GetAsync(p => p.Status == 1, null, "ProductCategory");
+                    shuffledItems = _mapper.Map<List<ProductResponse>>(productList.ToList()
+                        .OrderBy(x => _random.Next()));
+                    _cache.Set(cacheKey, shuffledItems, TimeSpan.FromMinutes(5));
+                }
+                var pagedItems = shuffledItems.Skip((pageIndex - 1) * pageSize).Take(pageIndex).ToList();
+
+                return pagedItems;
             }
             catch (Exception ex)
             {
@@ -38,6 +51,51 @@ namespace FLY.Business.Services.Implements
                 var product = await _unitOfWork.ProductRepository.GetByIDAsync(id);
                 var result = _mapper.Map<ProductResponse>(product);
                 return result;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<List<ProductResponse>> GetProductsByCategoryAsync(string categoryName, 
+            int pageIndex, int pageSize)
+        {
+            try
+            {
+                var products = await _unitOfWork.ProductRepository
+                    .GetAsync(p => p.ProductCategory.ProductCategoryName == categoryName && p.Status == 1, 
+                        null, "ProductCategory", pageIndex, pageSize);
+                return _mapper.Map<List<ProductResponse>>(products.ToList());
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<List<ProductResponse>> GetProductsByNameAsync(string name, 
+            int pageIndex, int pageSize)
+        {
+            try
+            {
+                var products = await _unitOfWork.ProductRepository.GetAsync(p => p.ProductName.Contains(name) && p.Status == 1,
+                    null, "ProductCategory", pageIndex, pageSize);
+                return _mapper.Map<List<ProductResponse>>(products.ToList());
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<int> GetTotalPage(int pageSize)
+        {
+            try
+            {
+                int total;
+                total = await _unitOfWork.ProductRepository.CountAsync();
+                return (int)Math.Ceiling(total / (double)pageSize);
             }
             catch (Exception ex)
             {

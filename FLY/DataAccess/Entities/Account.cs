@@ -30,7 +30,7 @@ public partial class Account
     [MaxLength(50)]
     public string? Address { get; set; }
 
-    public DateTime? Dob { get; set; }
+    public DateOnly? Dob { get; set; }
 
     [Required]
     [MaxLength(50)]

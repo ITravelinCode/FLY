@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FLY.Migrations
 {
     [DbContext(typeof(FlyContext))]
-    [Migration("20240613032531_DbInit")]
+    [Migration("20240616091937_DbInit")]
     partial class DbInit
     {
         /// <inheritdoc />
@@ -41,8 +41,8 @@ namespace FLY.Migrations
                         .HasMaxLength(12)
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("Dob")
-                        .HasColumnType("datetime2");
+                    b.Property<DateOnly?>("Dob")
+                        .HasColumnType("date");
 
                     b.Property<string>("Email")
                         .IsRequired()

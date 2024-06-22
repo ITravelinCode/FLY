@@ -38,8 +38,8 @@ namespace FLY.Migrations
                         .HasMaxLength(12)
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("Dob")
-                        .HasColumnType("datetime2");
+                    b.Property<DateOnly?>("Dob")
+                        .HasColumnType("date");
 
                     b.Property<string>("Email")
                         .IsRequired()

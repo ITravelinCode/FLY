@@ -23,7 +23,7 @@ namespace FLY.Migrations
                     CitizenIdentification = table.Column<int>(type: "int", maxLength: 12, nullable: false),
                     TaxCode = table.Column<int>(type: "int", maxLength: 10, nullable: false),
                     Address = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    Dob = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Dob = table.Column<DateOnly>(type: "date", nullable: true),
                     Email = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false)

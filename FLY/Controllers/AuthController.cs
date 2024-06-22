@@ -3,11 +3,8 @@ using FLY.Business.Models.Account;
 using FLY.Business.Models.GoogleCloud;
 using FLY.Business.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using static Google.Apis.Requests.BatchRequest;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace FLY.Controllers
 {
@@ -20,6 +17,12 @@ namespace FLY.Controllers
         public AuthController(IAuthService authService)
         {
             _authService = authService;
+        }
+
+        [HttpGet("/customer-test"), Authorize(Policy = "CustomerPolicy")]
+        public IActionResult TestCustomerPolicy()
+        {
+            return Ok(new { message = "This is endpoint of customer." });
         }
 
         [AllowAnonymous]
